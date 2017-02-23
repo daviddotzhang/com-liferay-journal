@@ -125,6 +125,14 @@ public class JournalConverterImpl implements JournalConverter {
 	@Override
 	public String getContent(DDMStructure ddmStructure, Fields ddmFields)
 		throws Exception {
+		
+		return getContent(ddmStructure, ddmFields, false);
+	}
+
+	@Override
+	public String getContent(DDMStructure ddmStructure, Fields ddmFields,
+			boolean isVerifyProcess)
+		throws Exception {
 
 		Document document = SAXReaderUtil.createDocument();
 
@@ -153,7 +161,7 @@ public class JournalConverterImpl implements JournalConverter {
 
 				updateContentDynamicElement(
 					dynamicElementElement, ddmStructure, ddmFields,
-					ddmFieldsCounter);
+					ddmFieldsCounter, isVerifyProcess);
 			}
 		}
 
@@ -770,7 +778,7 @@ public class JournalConverterImpl implements JournalConverter {
 	protected void updateContentDynamicElement(
 			Element dynamicElementElement, DDMStructure ddmStructure,
 			Fields ddmFields, String fieldName,
-			DDMFieldsCounter ddmFieldsCounter)
+			DDMFieldsCounter ddmFieldsCounter, boolean isVerifyProcess)
 		throws Exception {
 
 		String fieldType = ddmStructure.getFieldType(fieldName);
@@ -811,7 +819,7 @@ public class JournalConverterImpl implements JournalConverter {
 
 				updateDynamicContentValue(
 					dynamicContentElement, fieldType, multiple,
-					valueString.trim());
+					valueString.trim(), isVerifyProcess);
 			}
 		}
 
@@ -915,7 +923,7 @@ public class JournalConverterImpl implements JournalConverter {
 
 	protected void updateDynamicContentValue(
 			Element dynamicContentElement, String fieldType, boolean multiple,
-			String fieldValue)
+			String fieldValue, boolean isVerifyProcess)
 		throws Exception {
 
 		if (DDMImpl.TYPE_CHECKBOX.equals(fieldType)) {
@@ -958,7 +966,12 @@ public class JournalConverterImpl implements JournalConverter {
 			dynamicContentElement.addAttribute(
 				"type", jsonObject.getString("type"));
 
-			dynamicContentElement.addCDATA(fieldValue);
+			if(isVerifyProcess) {
+				dynamicContentElement.setText(jsonObject.getString("data"));
+			}
+			else {
+				dynamicContentElement.addCDATA(fieldValue);
+			}
 		}
 		else if (DDMImpl.TYPE_DDM_LINK_TO_PAGE.equals(fieldType) &&
 				 Validator.isNotNull(fieldValue)) {

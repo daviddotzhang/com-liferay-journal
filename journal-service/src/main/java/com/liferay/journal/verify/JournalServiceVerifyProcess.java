@@ -373,7 +373,7 @@ public class JournalServiceVerifyProcess extends VerifyLayout {
 				ddmStructure, article.getContent());
 
 			String content = _journalConverter.getContent(
-				ddmStructure, ddmFields);
+				ddmStructure, ddmFields, true);
 
 			if (!content.equals(article.getContent())) {
 				article.setContent(content);
